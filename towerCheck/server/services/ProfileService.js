@@ -1,6 +1,6 @@
 import { dbContext } from '../db/DbContext.js'
 
-// IMPORTANT profiles should not be updated or modified in any way here. Use the AccountService
+
 
 class ProfileService {
   /**

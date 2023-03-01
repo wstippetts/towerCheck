@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-const Schema = mongoose.Schema
+export const Schema = mongoose.Schema
 
 export const AccountSchema = new Schema(
   {
@@ -11,4 +11,5 @@ export const AccountSchema = new Schema(
   },
   { timestamps: true, toJSON: { virtuals: true } }
 )
+
 
