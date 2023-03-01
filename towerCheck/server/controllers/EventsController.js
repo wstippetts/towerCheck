@@ -7,14 +7,43 @@ export class EventsController extends BaseController {
   constructor() {
     super('api/events')
     this.router
-      .get('', this.getEventById)
+      .get('/:eventId', this.getEventById)
       .get('', this.getAllEvents)
       .use(Auth0Provider.getAuthorizedUserInfo)
+      .put('/:eventId', this.updateEventById)
       .post('', this.createEvent)
+      .delete('/:eventId', this.cancelEvent)
 
   }
-  getEventById(req, res, next) {
-
+  async cancelEvent(req, res, next) {
+    try {
+      const eventId = req.params.eventId
+      const requestorId = req.userInfo.id
+      const event = await eventsService.cancelEvent(eventId, requestorId)
+      return res.send(event)
+    } catch (error) {
+      next(error)
+    }
+  }
+  async updateEventById(req, res, next) {
+    try {
+      const eventId = req.params.eventId
+      const eventData = req.body
+      const requestorId = req.userInfo.id
+      const updatedEvent = await eventsService.updateEventById(eventId, eventData, requestorId)
+      return res.send(updatedEvent)
+    } catch (error) {
+      next(error)
+    }
+  }
+  async getEventById(req, res, next) {
+    try {
+      const eventId = req.params.eventId
+      const event = await eventsService.getEventById(eventId)
+      return res.send(event)
+    } catch (error) {
+      next(error)
+    }
   }
   async getAllEvents(req, res, next) {
     try {
