@@ -5,10 +5,21 @@ import BaseController from '../utils/BaseController';
 
 export class TicketsController extends BaseController {
   constructor() {
-    super('api/tickets');
+    super('/');
     this.router
       .use(Auth0Provider.getAuthorizedUserInfo)
-      .post('', this.createTicket)
+      .get('account/tickets', this.getMyTickets)
+      .post('api/tickets', this.createTicket)
+  }
+  async getMyTickets(req, res, next) {
+    try {
+
+      const accountId = req.userInfo.id
+      const tickets = await ticketsService.getMyTickets(accountId)
+      return res.send(tickets)
+    } catch (error) {
+      next(error)
+    }
   }
   async createTicket(req, res, next) {
     try {

@@ -3,6 +3,11 @@ import { BadRequest } from "../utils/Errors.js";
 import { eventsService } from "./EventsService.js";
 
 class TicketsService {
+  async getMyTickets(accountId) {
+    // @ts-ignore
+    const myTickets = await dbContext.Tickets.find(i => i.accountId == accountId)
+    return myTickets
+  }
   async createTicket(ticketData) {
     const event = await eventsService.getEventById(ticketData.eventId)
     if (event.isCanceled || event.capacity <= 0) {
