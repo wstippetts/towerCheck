@@ -1,44 +1,77 @@
 <template>
-  <div class="home flex-grow-1 d-flex flex-column align-items-center justify-content-center">
-    <div class="home-card p-5 bg-white rounded elevation-3">
-      <img
-        src="https://bcw.blob.core.windows.net/public/img/8600856373152463"
-        alt="CodeWorks Logo"
-        class="rounded-circle"
-      >
-      <h1 class="my-5 bg-dark text-white p-3 rounded text-center">
-        Vue 3 Starter
-      </h1>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 p-4">
+        <div class="d-flex flex-column align-items-center">
+          <img class="img-fluid" alt="banner" src="../assets/img/Banner.png" />
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="row my-4">
+          <div class="col-12 p-4 mb-3">
+            <h1 class="text-light">Events:</h1>
+          </div>
+          <div class="col-10 m-auto">
+            <div class="bg-primary rounded p-3 d-flex justify-content-around">
+              <button @click="changeFilterCategory('')" class="btn btn-outline-light">All</button>
+              <button @click="changeFilterCategory('convention')" class="btn btn-outline-light">Conventions</button>
+              <button @click="changeFilterCategory('sport')" class="btn btn-outline-light">Sports</button>
+              <button @click="changeFilterCategory('digital')" class="btn btn-outline-light">Digital</button>
+              <button @click="changeFilterCategory('concert')" class="btn btn-outline-light">Concerts</button>
+            </div>
+          </div>
+          <div class="col-md-3" v-for="e in events" :key="e.id">
+            <EventCard :event="e" />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Pop from "../utils/Pop.js";
+import { computed, onMounted, ref } from 'vue';
+import { eventsService } from "../services/EventsService.js";
+import { AppState } from "../AppState.js";
+import EventCard from "../components/EventCard.vue";
+
 export default {
   setup() {
-    return {}
-  }
+    const filterCategory = ref('')
+    async function getAllEvents() {
+      try {
+        await eventsService.getAllEvents();
+      }
+      catch (error) {
+        Pop.error(error, "[Getting Events]");
+      }
+    }
+    onMounted(() => {
+      getAllEvents();
+    });
+    return {
+      events: computed(() => {
+        if (!filterCategory.value) {
+          return AppState.events
+        }
+        else {
+          return AppState.events.filter(e => e.type == filterCategory.value)
+        }
+
+      }),
+      myEvents: computed(() => AppState.myEvents),
+      account: computed(() => AppState.account),
+      changeFilterCategory(category) {
+        filterCategory.value = category
+      }
+    };
+  },
+  components: { EventCard }
 }
 </script>
 
-<style scoped lang="scss">
-.home {
-  display: grid;
-  height: 80vh;
-  place-content: center;
-  text-align: center;
-  user-select: none;
+<style scoped lang="scss"></style>
 
-  .home-card {
-    width: 50vw;
 
-    >img {
-      height: 200px;
-      max-width: 200px;
-      width: 100%;
-      object-fit: contain;
-      object-position: center;
-    }
-  }
-}
-</style>
