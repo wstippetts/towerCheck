@@ -8,6 +8,7 @@ export const CommentSchema = new Schema({
 
   creatorId: { type: Schema.Types.ObjectId, ref: 'Account', required: true },
   eventId: { type: Schema.Types.ObjectId, ref: 'Event', required: true },
+  // creator: { type: Schema.Types.ObjectId, ref: 'Event', required: true }
 
 }, { timestamps: true, toJSON: { virtuals: true } })
 
@@ -17,12 +18,4 @@ EventSchema.virtual('creator', {
   foreignField: '_id',
   justOne: true,
   ref: 'Account'
-})
-
-EventSchema.virtual('event', {
-  localField: 'eventId',
-  foreignField: '_id',
-  count: true,
-  ref: 'Event'
-
 })
