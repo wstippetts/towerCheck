@@ -3,9 +3,31 @@ import { BadRequest } from "../utils/Errors.js";
 import { eventsService } from "./EventsService.js";
 
 class TicketsService {
+  async deleteTicketById(ticketId, accountId) {
+    const removeTicket = await dbContext.Tickets.findById(ticketId).populate('event profile')
+    if (!removeTicket) {
+      throw new BadRequest('ticket not found')
+    }
+    if (accountId != removeTicket.accountId) {
+      throw new BadRequest('not your ticket!')
+    }
+    // const event = await eventsService.getEventById(removeTicket.eventId)
+    const event = await dbContext.Events.findById(removeTicket.eventId)
+    removeTicket.remove()
+    if (event) {
+      event.capacity = event.capacity + 1
+      await event.save()
+    }
+    return 'Ticket go bye bye, we are still charging you though'
+  }
+  async getAllTicketsByEvent(eventId) {
+    const eventTickets = await dbContext.Tickets.find({ eventId }).populate('profile event')
+    return eventTickets
+  }
   async getMyTickets(accountId) {
     // @ts-ignore
-    const myTickets = await dbContext.Tickets.find(i => i.accountId == accountId)
+    const myTickets = await dbContext.Tickets.find({ accountId }).populate('event profile')
+    // await myTickets.save()
     return myTickets
   }
   async createTicket(ticketData) {
@@ -15,7 +37,7 @@ class TicketsService {
     }
     const ticket = await dbContext.Tickets.create(ticketData)
     event.capacity -= event.capacity
-    await ticket.populate('profile')
+    await ticket.populate('event profile')
     event.save()
     return ticket
   }
