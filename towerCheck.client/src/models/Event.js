@@ -13,3 +13,4 @@ export class Event {
     this.creatorId = data.creatorId
   }
 }
+

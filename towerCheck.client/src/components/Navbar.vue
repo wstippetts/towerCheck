@@ -5,12 +5,17 @@
         <img alt="logo" src="../assets/img/logo.png" height="45" />
       </div>
     </router-link>
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
       aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto">
+        <li>
+          <button data-bs-toggle="modal" data-bs-target="#event-form" class="btn btn-outline-light mdi mdi-plus-box">Post
+            a new event!</button>
+        </li>
         <!-- <li>
           <router-link :to="{ name: 'About' }" class="btn text-success lighten-30 selectable text-uppercase">
             About
@@ -20,16 +25,21 @@
       <!-- LOGIN COMPONENT HERE -->
       <Login />
     </div>
+    <Modal id="event-form" modal-title="Post an event:">
+      <EventForm />
+    </Modal>
   </nav>
 </template>
 
 <script>
-import Login from './Login.vue'
+import EventForm from "./EventForm.vue";
+import Login from './Login.vue';
+import Modal from "./Modal.vue";
 export default {
   setup() {
     return {}
   },
-  components: { Login }
+  components: { Login, EventForm, Modal }
 }
 </script>
 

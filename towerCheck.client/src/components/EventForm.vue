@@ -18,6 +18,16 @@
           id="location" placeholder="location..." name="location">
       </div>
       <div class="mb-3">
+        <label for="capacity" class="form-label">Capacity:</label>
+        <input required type="number" v-model="editable.capacity" class="form-control" id="capacity"
+          placeholder="capacity..." name="capacity">
+      </div>
+      <div class="form-group">
+        <label for="startDate">Start date:</label>
+        <input type="startDate" class="form-control" id="startDate" name="startDate">
+      </div>
+
+      <div class="mb-3">
         <label for="coverImg" class="form-label">Event image:</label>
         <input required type="text" v-model="editable.coverImg" class="form-control" id="coverImg"
           placeholder="coverImg..." name="coverImg">
@@ -29,7 +39,11 @@
         </select>
       </div>
 
-
+      <div>
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+          {{ editable.id ? 'Save Changes' : 'Post event' }}
+        </button>
+      </div>
     </form>
 
   </div>
@@ -37,9 +51,33 @@
 
 
 <script>
+import { AppState } from "../AppState.js";
+import { ref } from "vue";
+import { router } from "../router.js";
+import { eventsService } from "../services/EventsService.js";
+import Pop from "../utils/Pop.js";
+
 export default {
   setup() {
-    return {}
+    const editable = ref({ ...AppState.event })
+    return {
+      editable,
+      type: ['concert', 'convention', 'sport', 'digital'],
+      async handleSubmit() {
+        try {
+          const event = editable.value.id
+            ? await eventsService.changeEvent(editable.value)
+            : await eventsService.createEvent(editable.value)
+          editable.value = {}
+          if (event?.id) {
+            router.push({ name: 'EventDetails', params: { eventId: event.id } })
+          }
+
+        } catch (error) {
+          Pop.error(error, 'failed event submission')
+        }
+      }
+    }
   }
 }
 </script>
