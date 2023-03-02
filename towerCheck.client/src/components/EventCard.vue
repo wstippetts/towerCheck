@@ -31,8 +31,10 @@ export default {
 .EventCard {
   height: 40vh;
   overflow: hidden;
-  text-shadow: 0 0 4px black;
+  // text-shadow: 0 0 2px ;
+  color: darkgoldenrod;
   letter-spacing: .07rem;
+  background-color: darkblue;
 
   img {
     height: 30vh;
