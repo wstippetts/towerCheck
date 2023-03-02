@@ -21,4 +21,4 @@ TicketSchema.virtual('event', {
 })
 
 
-TicketSchema.index({ eventId: 1, accountId: 1 }, { unique: true })
+// TicketSchema.index({ eventId: 1, accountId: 1 }, { unique: true })

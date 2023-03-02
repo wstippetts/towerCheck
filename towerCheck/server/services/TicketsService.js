@@ -4,7 +4,7 @@ import { eventsService } from "./EventsService.js";
 
 class TicketsService {
   async deleteTicketById(ticketId, accountId) {
-    const removeTicket = await dbContext.Tickets.findById(ticketId).populate('event profile')
+    const removeTicket = await dbContext.Tickets.findById(ticketId).populate('event')
     if (!removeTicket) {
       throw new BadRequest('ticket not found')
     }
@@ -12,8 +12,8 @@ class TicketsService {
       throw new BadRequest('not your ticket!')
     }
     // const event = await eventsService.getEventById(removeTicket.eventId)
-    const event = await dbContext.Events.findById(removeTicket.eventId)
-    removeTicket.remove()
+    const event = await dbContext.Events.findById(removeTicket.eventId).populate('creator')
+    await removeTicket.remove()
     if (event) {
       event.capacity = event.capacity + 1
       await event.save()
@@ -25,7 +25,7 @@ class TicketsService {
     return eventTickets
   }
   async getMyTickets(accountId) {
-    // @ts-ignore
+
     const myTickets = await dbContext.Tickets.find({ accountId }).populate('event profile')
     // await myTickets.save()
     return myTickets
@@ -36,9 +36,9 @@ class TicketsService {
       throw new BadRequest('Sorry no longer available')
     }
     const ticket = await dbContext.Tickets.create(ticketData)
-    event.capacity -= event.capacity
+    event.capacity -= 1
+    await event.save()
     await ticket.populate('event profile')
-    event.save()
     return ticket
   }
 
