@@ -1,8 +1,28 @@
 import { dbContext } from "../db/DbContext.js";
 import { BadRequest, Forbidden } from "../utils/Errors.js";
+import { logger } from "../utils/Logger.js";
 import { eventsService } from "./EventsService.js";
 
 class CommentsService {
+
+
+  async removeCommentById(commentId, requestorId) {
+    if (!commentId) {
+      throw new BadRequest('could not find comment by id')
+    }
+    const comment = await dbContext.Comments.findById(commentId).populate('creator')
+    if (comment) {
+      // @ts-ignore
+      if (comment.creatorId.toString() !== requestorId) {
+        throw new Forbidden('nice try bad guy')
+      }
+      logger.log(comment.creatorId.toString(), "creator Id stringifyed")
+      logger.log(requestorId)
+      await comment.remove()
+      return 'comment removed'
+    }
+
+  }
   async getCommentsByEvent(eventId) {
     const event = await eventsService.getEventById(eventId)
     if (!event) {

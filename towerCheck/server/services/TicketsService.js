@@ -1,5 +1,5 @@
 import { dbContext } from "../db/DbContext.js";
-import { BadRequest } from "../utils/Errors.js";
+import { BadRequest, Forbidden } from "../utils/Errors.js";
 import { eventsService } from "./EventsService.js";
 
 class TicketsService {
@@ -25,8 +25,10 @@ class TicketsService {
     return eventTickets
   }
   async getMyTickets(accountId) {
-
     const myTickets = await dbContext.Tickets.find({ accountId }).populate('event profile')
+    // if(accountId != myTickets.profile.creatorId){
+    //   throw new Forbidden('not your tickets!')
+    // }
     // await myTickets.save()
     return myTickets
   }
