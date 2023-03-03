@@ -39,6 +39,14 @@ class EventsService {
     AppState.event = new Event(res.data)
   }
 
+  async getMyEvents() {
+    const res = await api.get('account/tickets')
+    logger.log(res, 'getting my events')
+    const events = res.data.map(e => new Event(e))
+    AppState.myEvents = events
+    logger.log('my events in appstate!', AppState.myEvents)
+  }
+
   async cancelEvent(eventId) {
     const res = await api.remove(`api/events/${eventId}`)
     logger.log('event cancelled', res.data)

@@ -39,6 +39,17 @@
 
     </div>
   </div>
+  <button v-if="!eventTicket" @click="createTicket()" :disabled="event?.isCanceled" class="btn btn-success">
+    <i class="mdi mdi-heart"></i>
+    <br>
+    <b>Print ticket</b>
+  </button>
+  <button v-if="eventTicket" @click="returnTicket(eventTicket.ticketId)" :disabled="event?.isCanceled"
+    class="btn btn-outline-danger">
+    <i class="mdi mdi-heart"></i>
+    <br>
+    <b>Refund ticket</b>
+  </button>
 </template>
 
 
@@ -50,12 +61,13 @@ import { attendeesService } from "../services/AttendeesService.js";
 import { eventsService } from "../services/EventsService.js";
 import Pop from "../utils/Pop.js";
 import { watchEffect } from "vue";
+import { logger } from "../utils/Logger.js";
 
 export default {
 
   setup() {
     const route = useRoute()
-    const router = useRouter()
+    const router = useRouter() // get this working!!!!
 
     async function getEventById() {
       const eventId = route.params.eventId
@@ -85,9 +97,28 @@ export default {
     })
 
     return {
-      guest: computed(() => AppState.attendee),
+      guest: computed(() => AppState.ticket),
       event: computed(() => AppState.event),
-      tickets: computed(() => AppState.attendee)
+      eventTicket: computed(() => AppState.ticket.find(t => t.id == AppState.account.id)),
+
+      async createTicket() {
+        try {
+          await attendeesService.createTicket({ eventId: route.params.eventId })
+        } catch (error) {
+          logger.error(error)
+          Pop.error(error)
+        }
+      },
+      async returnTicket(eventTicketId) {
+        try {
+          if (await Pop.confirm('are you sure you dont want to go to this event!???')) {
+            await attendeesService.returnTicket(eventTicketId)
+          }
+        } catch (error) {
+          logger.error(error)
+          Pop.error(error)
+        }
+      }
     }
   }
 }
