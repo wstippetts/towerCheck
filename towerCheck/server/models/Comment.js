@@ -4,7 +4,7 @@ import { EventSchema } from "./Event.js";
 
 export const CommentSchema = new Schema({
 
-  body: { ...basicStringType, required: true, minLength: 2, maxLength: 5000 },
+  body: { ...basicStringType, required: true },
 
   creatorId: { type: Schema.Types.ObjectId, ref: 'Account', required: true },
   eventId: { type: Schema.Types.ObjectId, ref: 'Event', required: true },
@@ -18,4 +18,10 @@ EventSchema.virtual('creator', {
   foreignField: '_id',
   justOne: true,
   ref: 'Account'
+})
+
+EventSchema.virtual('event', {
+  localField: 'eventId',
+  foreignField: '_id',
+  ref: 'Event'
 })
