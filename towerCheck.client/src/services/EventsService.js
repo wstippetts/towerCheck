@@ -1,4 +1,5 @@
 import { AppState } from "../AppState.js"
+import { Comment } from "../models/Comment.js"
 import { Event } from "../models/Event.js"
 import { logger } from "../utils/Logger.js"
 import { api } from "./AxiosService.js"
@@ -37,6 +38,21 @@ class EventsService {
     const res = await api.get(`api/events/${eventId}`)
     logger.log('got event by ID', res.data)
     AppState.event = new Event(res.data)
+  }
+
+  async getCommentsByEventId(eventId) {
+    const res = await api.get(`api/events/${eventId}/comments`)
+    logger.log('comments by event ID', res.data)
+    AppState.comments = res.data.map(c => new Comment(c))
+  }
+  async postComment(formData, eventId) {
+    debugger
+
+    logger.log(eventId.eventId, 'this is the event id')
+
+    formData.eventId = eventId
+    const res = await api.post('api/comments', formData)
+    logger.log('sending comment post', res.data)
   }
 
   async getMyEvents() {

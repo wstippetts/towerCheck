@@ -38,23 +38,40 @@
       </div>
 
     </div>
+
   </div>
-  <button v-if="!eventTicket" @click="createTicket()" :disabled="event?.isCanceled" class="btn btn-success">
-    <i class="mdi mdi-heart"></i>
-    <br>
-    <b>Print ticket</b>
-  </button>
-  <button v-if="eventTicket" @click="returnTicket(eventTicket.ticketId)" :disabled="event?.isCanceled"
-    class="btn btn-outline-danger">
-    <i class="mdi mdi-heart"></i>
-    <br>
-    <b>Refund ticket</b>
-  </button>
+  <div>
+    <button v-if="!eventTicket" @click="createTicket()" :disabled="event?.isCanceled" class="btn btn-success">
+      <i class="mdi mdi-heart"></i>
+      <br>
+      <b>Print ticket</b>
+    </button>
+    <button v-if="eventTicket" @click="returnTicket(eventTicket.ticketId)" :disabled="event?.isCanceled"
+      class="btn btn-outline-danger">
+      <i class="mdi mdi-heart"></i>
+      <br>
+      <b>Refund ticket</b>
+    </button>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-9">
+      <form @submit.prevent="postComment()">
+        <textarea class="textbox m-3" v-model="formData.newPost.body" placeholder="whats on your mind?" name="body"
+          id="body" rows="10"> </textarea>
+        <button type="submit" class=" btn btn-outline-primary">
+          <b>Post</b>
+        </button>
+      </form>
+
+    </div>
+  </div>
 </template>
 
 
 <script>
-import { computed } from "vue";
+import { computed, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { AppState } from "../AppState.js";
 import { attendeesService } from "../services/AttendeesService.js";
@@ -66,6 +83,12 @@ import { logger } from "../utils/Logger.js";
 export default {
 
   setup() {
+    const formData = reactive({
+      newPost: {
+        body: ''
+      }
+    })
+
     const route = useRoute()
     const router = useRouter() // get this working!!!!
 
@@ -78,6 +101,8 @@ export default {
         router.push('/')
       }
     }
+
+
     async function getTicketsByEventId() {
 
       const eventId = route.params.eventId
@@ -86,20 +111,46 @@ export default {
       } catch (error) {
         Pop.error(error)
       }
-
-
     }
+
+
+    async function getCommentsByEventId() {
+      try {
+        const eventId = route.params.eventId
+        await eventsService.getCommentsByEventId(eventId)
+      } catch (error) {
+        Pop.error(error)
+      }
+    }
+
 
 
     watchEffect(() => {
       getEventById()
       getTicketsByEventId()
+      getCommentsByEventId()
     })
 
     return {
       guest: computed(() => AppState.ticket),
       event: computed(() => AppState.event),
       eventTicket: computed(() => AppState.ticket.find(t => t.id == AppState.account.id)),
+      formData,
+
+      clearForm() {
+        formData.newPost = {
+          body: ""
+        };
+      },
+      async postComment() {
+        try {
+          await eventsService.postComment(this.formData.newPost, route.params.eventId)
+          this.clearForm();
+        } catch (error) {
+          Pop.error(error)
+        }
+
+      },
 
       async createTicket() {
         try {
