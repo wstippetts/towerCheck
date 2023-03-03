@@ -1,4 +1,5 @@
 import { Auth0Provider } from "@bcwdev/auth0provider"
+import { commentsService } from "../services/CommentsService.js";
 import { eventsService } from "../services/EventsService.js";
 import BaseController from '../utils/BaseController';
 
@@ -7,6 +8,7 @@ export class EventsController extends BaseController {
   constructor() {
     super('api/events')
     this.router
+      .get('/:eventId/comments', this.getCommentByEvent)
       .get('/:eventId', this.getEventById)
       .get('', this.getAllEvents)
       .use(Auth0Provider.getAuthorizedUserInfo)
@@ -14,6 +16,15 @@ export class EventsController extends BaseController {
       .post('', this.createEvent)
       .delete('/:eventId', this.cancelEvent)
 
+  }
+  async getCommentByEvent(req, res, next) {
+    try {
+      const eventId = req.params.eventId
+      const comments = await commentsService.getCommentsByEvent(eventId)
+      return res.send(comments)
+    } catch (error) {
+      next(error)
+    }
   }
   async cancelEvent(req, res, next) {
     try {
