@@ -4,6 +4,13 @@
     <img class="rounded" :src="account.picture" alt="" />
     <p>{{ account.email }}</p>
   </div>
+
+  <div class="container">
+    <div class="row">
+      {{ myTickets }}
+
+    </div>
+  </div>
 </template>
 
 <script>
@@ -26,23 +33,21 @@ export default {
         logger.error(error)
       }
     }
-    async function getmyEvents() {
-      try {
-        try {
-          eventsService.getMyEvents()
-        } catch (error) {
-          logger.error(error)
-          Pop.error(error)
-        }
-      } catch (error) {
-        Pop.error(error)
-        logger.error(error)
-      }
-    }
+    //attending events
+    // async function getmyEvents() {
+    //   try {
+    //     eventsService.getMyEvents()
+
+    //   } catch (error) {
+    //     Pop.error(error)
+    //     logger.log(error)
+    //   }
+
+    // }
 
     onMounted(() => {
       getMyEventTickets()
-      getmyEvents()
+      // getmyEvents()
     })
     return {
       account: computed(() => AppState.account),

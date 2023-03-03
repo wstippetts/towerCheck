@@ -1,6 +1,7 @@
 import { AppState } from "../AppState.js"
 import { Comment } from "../models/Comment.js"
 import { Event } from "../models/Event.js"
+import { Ticket } from "../models/Ticket.js"
 import { logger } from "../utils/Logger.js"
 import { api } from "./AxiosService.js"
 class EventsService {
@@ -46,7 +47,6 @@ class EventsService {
     AppState.comments = res.data.map(c => new Comment(c))
   }
   async postComment(formData, eventId) {
-    debugger
 
     logger.log(eventId.eventId, 'this is the event id')
 
@@ -58,7 +58,7 @@ class EventsService {
   async getMyEvents() {
     const res = await api.get('account/tickets')
     logger.log(res, 'getting my events')
-    const events = res.data.map(e => new Event(e))
+    const events = res.data.map(e => new Ticket(e))
     AppState.myEvents = events
     logger.log('my events in appstate!', AppState.myEvents)
   }

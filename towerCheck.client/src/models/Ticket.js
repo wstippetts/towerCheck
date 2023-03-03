@@ -1,8 +1,6 @@
-import { Profile } from "./Account.js"
 
-export class Ticket extends Profile {
+export class Ticket {
   constructor(data) {
-    super(data.profile)
     this.ticketId = data.id
     this.eventId = data.eventId
     this.accountId = data.accountId
@@ -11,4 +9,3 @@ export class Ticket extends Profile {
 
   }
 }
-

@@ -11,18 +11,26 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto">
-        <li>
+        <li class="m-2">
           <button data-bs-toggle="modal" data-bs-target="#event-form" class="btn btn-outline-light mdi mdi-plus-box">Post
             a new event!</button>
         </li>
-        <!-- <li>
+        <li class="m-2">
+          <router-link :to="{ name: 'Account' }" class="btn btn-outline-light lighten-30 selectable text-uppercase ">
+            My Account
+          </router-link>
+        </li>
+        <li class="m-2">
           <router-link :to="{ name: 'About' }" class="btn text-success lighten-30 selectable text-uppercase">
             About
           </router-link>
-        </li> -->
+        </li>
+        <li class="m-2">
+          <Login />
+
+        </li>
       </ul>
       <!-- LOGIN COMPONENT HERE -->
-      <Login />
     </div>
     <Modal id="event-form" modal-title="Post an event:">
       <EventForm />

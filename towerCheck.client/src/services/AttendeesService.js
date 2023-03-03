@@ -21,6 +21,7 @@ class AttendeesService {
     const res = await api.post('api/tickets', eventData)
     logger.log('printing ticket ', res.data)
     AppState.ticket.push(new Ticket(res.data))
+
     AppState.myEvents.push(new EventTicket(res.data))
   }
 

@@ -15,7 +15,7 @@
               <p v-if="!event.isCanceled"><b>Tickets remaining: {{ event.capacity }}</b></p>
             </div>
             <div v-if="!event.isCanceled" class="col-md-4">
-              <p><b>Opening day: {{ new Date(event.startDate).toLocaleDateString(en - us) }}</b></p>
+              <p><b>Opening day: {{ new Date(event.startDate).toLocaleDateString('en-us') }}</b></p>
               <p><b>Event: {{ event.type }}</b></p>
             </div>
             <div v-else="event.isCanceled" class="me-5">
@@ -41,7 +41,8 @@
 
   </div>
   <div>
-    <button v-if="!eventTicket" @click="createTicket()" :disabled="event?.isCanceled" class="btn btn-success">
+    <button v-if="!eventTicket && event?.capacity && event?.isCanceled == false > 0" @click="createTicket()"
+      :disabled="event?.isCanceled" class="btn btn-success">
       <i class="mdi mdi-heart"></i>
       <br>
       <b>Print ticket</b>
@@ -67,6 +68,13 @@
 
     </div>
   </div>
+  <div class="row justify-content-center">
+
+    <div class="col-8">
+
+      <CommentCard />
+    </div>
+  </div>
 </template>
 
 
@@ -79,64 +87,55 @@ import { eventsService } from "../services/EventsService.js";
 import Pop from "../utils/Pop.js";
 import { watchEffect } from "vue";
 import { logger } from "../utils/Logger.js";
+import CommentCard from "../components/CommentCard.vue";
 
 export default {
-
   setup() {
     const formData = reactive({
       newPost: {
-        body: ''
+        body: ""
       }
-    })
-
-    const route = useRoute()
-    const router = useRouter() // get this working!!!!
-
+    });
+    const route = useRoute();
+    const router = useRouter(); // get this working!!!!
     async function getEventById() {
-      const eventId = route.params.eventId
+      const eventId = route.params.eventId;
       try {
-        await eventsService.getEventById(eventId)
-      } catch (error) {
-        Pop.error('Event not found, sending back to home')
-        router.push('/')
+        await eventsService.getEventById(eventId);
+      }
+      catch (error) {
+        Pop.error("Event not found, sending back to home");
+        router.push("/");
       }
     }
-
-
     async function getTicketsByEventId() {
-
-      const eventId = route.params.eventId
+      const eventId = route.params.eventId;
       try {
-        await attendeesService.getTicketsByEventId(eventId)
-      } catch (error) {
-        Pop.error(error)
+        await attendeesService.getTicketsByEventId(eventId);
+      }
+      catch (error) {
+        Pop.error(error);
       }
     }
-
-
     async function getCommentsByEventId() {
       try {
-        const eventId = route.params.eventId
-        await eventsService.getCommentsByEventId(eventId)
-      } catch (error) {
-        Pop.error(error)
+        const eventId = route.params.eventId;
+        await eventsService.getCommentsByEventId(eventId);
+      }
+      catch (error) {
+        Pop.error(error);
       }
     }
-
-
-
     watchEffect(() => {
-      getEventById()
-      getTicketsByEventId()
-      getCommentsByEventId()
-    })
-
+      getEventById();
+      getTicketsByEventId();
+      getCommentsByEventId();
+    });
     return {
       guest: computed(() => AppState.ticket),
       event: computed(() => AppState.event),
       eventTicket: computed(() => AppState.ticket.find(t => t.id == AppState.account.id)),
       formData,
-
       clearForm() {
         formData.newPost = {
           body: ""
@@ -144,34 +143,36 @@ export default {
       },
       async postComment() {
         try {
-          await eventsService.postComment(this.formData.newPost, route.params.eventId)
+          await eventsService.postComment(this.formData.newPost, route.params.eventId);
           this.clearForm();
-        } catch (error) {
-          Pop.error(error)
         }
-
+        catch (error) {
+          Pop.error(error);
+        }
       },
-
       async createTicket() {
         try {
-          await attendeesService.createTicket({ eventId: route.params.eventId })
-        } catch (error) {
-          logger.error(error)
-          Pop.error(error)
+          await attendeesService.createTicket({ eventId: route.params.eventId });
+        }
+        catch (error) {
+          logger.error(error);
+          Pop.error(error);
         }
       },
       async returnTicket(eventTicketId) {
         try {
-          if (await Pop.confirm('are you sure you dont want to go to this event!???')) {
-            await attendeesService.returnTicket(eventTicketId)
+          if (await Pop.confirm("are you sure you dont want to go to this event!???")) {
+            await attendeesService.returnTicket(eventTicketId);
           }
-        } catch (error) {
-          logger.error(error)
-          Pop.error(error)
+        }
+        catch (error) {
+          logger.error(error);
+          Pop.error(error);
         }
       }
-    }
-  }
+    };
+  },
+  components: { CommentCard }
 }
 </script>
 
