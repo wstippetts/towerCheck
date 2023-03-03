@@ -28,6 +28,7 @@
     <Modal id="event-form" modal-title="Post an event:">
       <EventForm />
     </Modal>
+
   </nav>
 </template>
 
@@ -35,12 +36,15 @@
 import EventForm from "./EventForm.vue";
 import Login from './Login.vue';
 import Modal from "./Modal.vue";
+
 export default {
   setup() {
     return {}
   },
   components: { Login, EventForm, Modal }
 }
+
+
 </script>
 
 <style scoped>

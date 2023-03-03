@@ -15,4 +15,4 @@ class AttendeesService {
   }
 
 }
-export const attendeesService = new attendeesService();
+export const attendeesService = new AttendeesService();

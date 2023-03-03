@@ -24,7 +24,7 @@
       </div>
       <div class="form-group">
         <label for="startDate">Start date:</label>
-        <input type="startDate" class="form-control" id="startDate" name="startDate">
+        <input type="date" class="form-control" id="startDate" name="startDate">
       </div>
 
       <div class="mb-3">

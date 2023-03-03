@@ -11,6 +11,6 @@ export class Event {
     this.type = data.type
     this.isCanceled = data.isCanceled
     this.creatorId = data.creatorId
+
   }
 }
-
