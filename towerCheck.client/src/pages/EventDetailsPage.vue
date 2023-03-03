@@ -11,17 +11,33 @@
           <div class="d-flex flex-row justify-content-between mt-4">
             <div class="col-7">
               <p><b>Location: {{ event.location }}</b></p>
-              <p><b>Tickets remaining: {{ event.capacity }}</b></p>
+
+              <p v-if="!event.isCanceled"><b>Tickets remaining: {{ event.capacity }}</b></p>
             </div>
-            <div class="col-md-4">
+            <div v-if="!event.isCanceled" class="col-md-4">
               <p><b>Opening day: {{ new Date(event.startDate).toLocaleDateString(en - us) }}</b></p>
               <p><b>Event: {{ event.type }}</b></p>
+            </div>
+            <div v-else="event.isCanceled" class="me-5">
+              <h1 class="canceled">CANCELED</h1>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <div class="row justify-content-center" v-if="guest.length">
+        <div class="col-12 glassCard rounded m-4 p-2 d-flex justify-content-start">
+          <h2 class="p-3 m-3">Attendees:</h2>
+          <div v-for="p in guest" class="img-fluid rounded ">
+            <img class="profilePic elevation-4" :src="p.profile.picture">
+            <h6>{{ p.profile.name }}</h6>
 
+          </div>
+
+
+        </div>
+      </div>
+
+    </div>
   </div>
 </template>
 
@@ -51,24 +67,27 @@ export default {
       }
     }
     async function getTicketsByEventId() {
-      if (tickets.length) {
-        const eventId = route.params.eventId
-        try {
-          await attendeesService.getTicketsByEventId()
-        } catch (error) {
-          Pop.error(error)
-        }
+
+      const eventId = route.params.eventId
+      try {
+        await attendeesService.getTicketsByEventId(eventId)
+      } catch (error) {
+        Pop.error(error)
       }
+
 
     }
 
+
     watchEffect(() => {
       getEventById()
+      getTicketsByEventId()
     })
 
     return {
-      // tickets: computed(() => AppState.attendee),
-      event: computed(() => AppState.event)
+      guest: computed(() => AppState.attendee),
+      event: computed(() => AppState.event),
+      tickets: computed(() => AppState.attendee)
     }
   }
 }
@@ -88,7 +107,18 @@ h5 {
 
 .glassCard {
   background-color: rgba(28, 236, 174, 0.082);
+  overflow: auto;
 }
 
-.event-img {}
+.profilePic {
+  height: 5vh;
+  margin: 7px;
+  border-radius: 50%;
+}
+
+.canceled {
+  color: red;
+  box-shadow: 2px 2px 4px black;
+
+}
 </style>

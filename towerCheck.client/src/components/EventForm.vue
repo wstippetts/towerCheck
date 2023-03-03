@@ -22,9 +22,9 @@
         <input required type="number" v-model="editable.capacity" class="form-control" id="capacity"
           placeholder="capacity..." name="capacity">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="startDate">Start date:</label>
-        <input type="date" class="form-control" id="startDate" name="startDate">
+        <input v-model="editable.startDate" type="date" class="form-control" id="startDate" name="startDate">
       </div>
 
       <div class="mb-3">

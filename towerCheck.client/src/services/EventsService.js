@@ -12,15 +12,17 @@ class EventsService {
   }
 
   async createEvent(formData) {
+    // logger.log(formData, 'date format stringified?')
     const res = await api.post('api/events', formData)
-    logger.log('creating Event', res.data)
+    // logger.log('creating Event', res.data)
     AppState.events.push(res.data)
 
   }
 
   async changeEvent(formData) {
-    const res = await api.put(`api/events/${formData.id}`, formData)
     logger.log('editing event', res.data)
+
+    const res = await api.put(`api/events/${formData.id}`, formData)
     let i = AppState.events.findIndex(e => e.id == formData.id)
     if (i == -1) {
       throw new Error('Error, could not edit. Event not found')
