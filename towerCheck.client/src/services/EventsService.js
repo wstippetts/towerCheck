@@ -4,6 +4,7 @@ import { Event } from "../models/Event.js"
 import { Ticket } from "../models/Ticket.js"
 import { logger } from "../utils/Logger.js"
 import { api } from "./AxiosService.js"
+import { router } from "../router.js";
 class EventsService {
   async getAllEvents() {
     const res = await api.get('api/events')
@@ -18,6 +19,12 @@ class EventsService {
     const res = await api.post('api/events', formData)
     // logger.log('creating Event', res.data)
     AppState.events.push(res.data)
+    // AppState.event.push(res.data)
+    const id = res.data.id
+    logger.log(res.data, 'this is the res data on form data')
+    logger.log(id, ' this is the id on res.data.id')
+    router.push({ name: 'EventDetails', params: { eventId: res.data.id } })
+
 
   }
 
@@ -55,18 +62,28 @@ class EventsService {
     logger.log('sending comment post', res.data)
   }
 
-  async getMyEvents() {
-    const res = await api.get('account/tickets')
-    logger.log(res, 'getting my events')
-    const events = res.data.map(e => new Ticket(e))
-    AppState.myEvents = events
-    logger.log('my events in appstate!', AppState.myEvents)
-  }
+  // async getMyEvents() {
+  //   const res = await api.get('account/tickets')
+  //   logger.log(res, 'getting my events')
+  //   const events = res.data.map(e => new Ticket(e))
+  //   AppState.myEvents = events
+  //   logger.log('my events in appstate!', AppState.myEvents)
+  // }
 
   async cancelEvent(eventId) {
     const res = await api.remove(`api/events/${eventId}`)
     logger.log('event cancelled', res.data)
     AppState.event = new Event(res.data)
+  }
+
+  async removeComment(postId) {
+
+    const res = await api.delete(`api/comments/${postId}`)
+    logger.log('removing comment', res.data)
+    const commentIndex = AppState.comments.findIndex(c => c.creatorId == postId)
+    if (commentIndex !== -1) {
+      AppState.comments.splice(commentIndex, 1)
+    }
   }
 
 

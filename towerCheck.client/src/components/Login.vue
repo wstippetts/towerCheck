@@ -12,7 +12,7 @@
             <img :src="account.picture || user.picture" alt="account photo" height="40" class="rounded" />
           </div>
         </div>
-        <div class="dropdown-menu dropdown-menu-lg-left p-5 m-5 d-flex d-auto" aria-labelledby="authDropdown"
+        <!-- <div class="dropdown-menu dropdown-menu-lg-left p-5 m-5 d-flex d-auto" aria-labelledby="authDropdown"
           :class="{ show }">
           <div class="list-group">
             <router-link :to="{ name: 'Account' }">
@@ -25,7 +25,7 @@
               logout
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </span>

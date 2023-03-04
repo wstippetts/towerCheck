@@ -12,8 +12,9 @@
           <button @click="like(post)" class="mb-2">
           </button>
           <img :src="post.creator.picture" :alt="post.creator.name" class="profile-picture">
-          <button v-if="account?.id === post.creator?.id" class="mdi mdi-delete rounded text-danger"
-            @click="removePost(post.id)"></button>
+          <!-- TODO NEED TO FIX DELETE -->
+          <button v-if="account?.id == post.creator?.id" class="mdi mdi-delete rounded text-danger"
+            @click="removePost(post.id)">DELETE</button>
           <!-- <button v-if="account.id === post.creatorId" class="mdi mdi-hamburger rounded text-secondary"
             @click="editPost(post)"></button> -->
 
@@ -29,10 +30,23 @@
 <script>
 import { AppState } from "../AppState.js";
 import { computed } from "vue";
+import Pop from "../utils/Pop.js";
+import { eventsService } from "../services/EventsService.js";
 export default {
   setup() {
     return {
-      comments: computed(() => AppState.comments)
+      comments: computed(() => AppState.comments),
+      account: computed(() => AppState.account),
+
+      async removePost(postId) {
+        try {
+          if (await Pop.confirm('are you sure you want to delete your post')) {
+            await eventsService.removeComment(postId)
+          }
+        } catch (error) {
+          Pop.error(error)
+        }
+      }
     }
   }
 }

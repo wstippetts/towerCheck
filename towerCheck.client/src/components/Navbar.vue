@@ -20,10 +20,18 @@
             My Account
           </router-link>
         </li>
-        <li class="m-2">
+        <!-- <li class="m-2">
           <router-link :to="{ name: 'About' }" class="btn text-success lighten-30 selectable text-uppercase">
             About
           </router-link>
+        </li> -->
+        <li>
+          <button @click="cancelEvent(eventId)"
+            v-if="account.id && route.name == 'EventDetailsPage' && event?.creatorId == account.id"
+            class="btn btn-danger ms-4" :disabled="event.isCanceled">
+            <i class="mdi mdi-close-circle text-dark"></i>
+            Cancel
+          </button>
         </li>
         <li class="m-2">
           <Login />
@@ -40,13 +48,34 @@
 </template>
 
 <script>
+import { useRoute } from "vue-router";
+import { AppState } from "../AppState.js";
+import { eventsService } from "../services/EventsService.js";
+import Pop from "../utils/Pop.js";
 import EventForm from "./EventForm.vue";
 import Login from './Login.vue';
 import Modal from "./Modal.vue";
+import { computed } from 'vue';
+
 
 export default {
   setup() {
-    return {}
+    const route = useRoute()
+    return {
+      route,
+      account: computed(() => AppState.account),
+      event: computed(() => AppState.event),
+
+      async cancelEvent(eventId) {
+        try {
+          if (await Pop.confirm('do you want to cancel this even?')) {
+            await eventsService.cancelEvent(eventId)
+          }
+        } catch (error) {
+          Pop.error(error)
+        }
+      }
+    }
   },
   components: { Login, EventForm, Modal }
 }

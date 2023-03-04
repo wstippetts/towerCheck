@@ -53,6 +53,12 @@
       <br>
       <b>Refund ticket</b>
     </button>
+    <!-- <button v-if="account?.id == event?.creatorId" @click="eventsService.changeEvent(event.isCanceled = true)"
+      :disabled="event?.isCanceled" class="btn btn-outline-danger">
+      <i class="mdi mdi-heart"></i>
+      <br>
+      <b>Cancel event</b>
+    </button> -->
 
   </div>
 
@@ -85,7 +91,7 @@ import { AppState } from "../AppState.js";
 import { attendeesService } from "../services/AttendeesService.js";
 import { eventsService } from "../services/EventsService.js";
 import Pop from "../utils/Pop.js";
-import { watchEffect } from "vue";
+import { watchEffect, onMounted } from "vue";
 import { logger } from "../utils/Logger.js";
 import CommentCard from "../components/CommentCard.vue";
 
@@ -97,13 +103,15 @@ export default {
       }
     });
     const route = useRoute();
-    const router = useRouter(); // get this working!!!!
+    const router = useRouter();
+    const event = getEventById();
+
+
     async function getEventById() {
-      const eventId = route.params.eventId;
       try {
+        const eventId = route.params.eventId
         await eventsService.getEventById(eventId);
-      }
-      catch (error) {
+      } catch (error) {
         Pop.error("Event not found, sending back to home");
         router.push("/");
       }
@@ -126,15 +134,22 @@ export default {
         Pop.error(error);
       }
     }
+    onMounted(() => {
+
+    })
     watchEffect(() => {
-      getEventById();
-      getTicketsByEventId();
-      getCommentsByEventId();
+      if (route.params.eventId) {
+        getEventById();
+        getTicketsByEventId();
+        getCommentsByEventId();
+
+      }
     });
     return {
       guest: computed(() => AppState.ticket),
       event: computed(() => AppState.event),
       eventTicket: computed(() => AppState.ticket.find(t => t.id == AppState.account.id)),
+      account: computed(() => AppState.account),
       formData,
       clearForm() {
         formData.newPost = {

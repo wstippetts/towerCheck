@@ -22,7 +22,7 @@ class AttendeesService {
     logger.log('printing ticket ', res.data)
     AppState.ticket.push(new Ticket(res.data))
 
-    AppState.myEvents.push(new EventTicket(res.data))
+    // AppState.myEvents.push(new EventTicket(res.data))
   }
 
   async returnTicket(eventTicketId) {
@@ -43,7 +43,7 @@ class AttendeesService {
     const res = await api.get('account/tickets')
     logger.log('getting my event tickets', res.data)
     if (res.data.length) {
-      AppState.myTickets = res.data.map(t => new Ticket(t))
+      return AppState.myTickets = res.data.map(t => new EventTicket(t))
 
     }
     AppState.myTickets = []
