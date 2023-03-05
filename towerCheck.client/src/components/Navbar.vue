@@ -25,14 +25,9 @@
             About
           </router-link>
         </li> -->
-        <li>
-          <button @click="cancelEvent(eventId)"
-            v-if="account.id && route.name == 'EventDetailsPage' && event?.creatorId == account.id"
-            class="btn btn-danger ms-4" :disabled="event.isCanceled">
-            <i class="mdi mdi-close-circle text-dark"></i>
-            Cancel
-          </button>
-        </li>
+
+
+
         <li class="m-2">
           <Login />
 
@@ -66,15 +61,7 @@ export default {
       account: computed(() => AppState.account),
       event: computed(() => AppState.event),
 
-      async cancelEvent(eventId) {
-        try {
-          if (await Pop.confirm('do you want to cancel this even?')) {
-            await eventsService.cancelEvent(eventId)
-          }
-        } catch (error) {
-          Pop.error(error)
-        }
-      }
+
     }
   },
   components: { Login, EventForm, Modal }

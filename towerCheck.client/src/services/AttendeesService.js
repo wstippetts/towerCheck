@@ -1,6 +1,6 @@
 import { AppState } from "../AppState.js";
 import { EventTicket } from "../models/Event.js";
-import { Ticket } from "../models/Ticket.js";
+import { eventTicket, Ticket } from "../models/Ticket.js";
 import { logger } from "../utils/Logger.js";
 import { api } from "./AxiosService.js";
 
@@ -10,7 +10,7 @@ class AttendeesService {
     const res = await api.get(`api/events/${eventId}/tickets`)
     logger.log('ticket holders', res.data)
     if (res.data.length) {
-      AppState.ticket = res.data.map(a => new Ticket(a))
+      AppState.ticket = res.data.map(a => new eventTicket(a))
     }
     AppState.ticket = res.data
     return AppState.ticket
@@ -20,9 +20,9 @@ class AttendeesService {
   async createTicket(eventData) {
     const res = await api.post('api/tickets', eventData)
     logger.log('printing ticket ', res.data)
-    AppState.ticket.push(new Ticket(res.data))
+    AppState.ticket.push(new eventTicket(res.data))
 
-    // AppState.myEvents.push(new EventTicket(res.data))
+    AppState.myTickets.push(new EventTicket(res.data))
   }
 
   async returnTicket(eventTicketId) {

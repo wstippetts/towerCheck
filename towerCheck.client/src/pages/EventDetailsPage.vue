@@ -14,7 +14,7 @@
 
               <p v-if="!event.isCanceled"><b>Tickets remaining: {{ event.capacity }}</b></p>
             </div>
-            <div v-if="!event.isCanceled" class="col-md-4">
+            <div v-if="!event?.isCanceled" class="col-md-4">
               <p><b>Opening day: {{ new Date(event.startDate).toLocaleDateString('en-us') }}</b></p>
               <p><b>Event: {{ event.type }}</b></p>
             </div>
@@ -28,8 +28,8 @@
         <div class="col-12 glassCard rounded m-4 p-2 d-flex justify-content-start">
           <h2 class="p-3 m-3">Attendees:</h2>
           <div v-for="p in guest" class="img-fluid rounded ">
-            <img class="profilePic elevation-4" :src="p.profile.picture">
-            <h6>{{ p.profile.name }}</h6>
+            <img class="profilePic elevation-4" :src="p.profile?.picture">
+            <h6>{{ p.profile?.name }}</h6>
 
           </div>
 
@@ -41,17 +41,22 @@
 
   </div>
   <div>
-    <button v-if="!eventTicket && event?.capacity && event?.isCanceled == false > 0" @click="createTicket()"
+    <button v-if="!attending && event?.capacity > 0 && event?.isCanceled == false" @click="createTicket()"
       :disabled="event?.isCanceled" class="btn btn-success">
       <i class="mdi mdi-heart"></i>
       <br>
       <b>Print ticket</b>
     </button>
-    <button v-if="eventTicket" @click="returnTicket(eventTicket.ticketId)" :disabled="event?.isCanceled"
+    <button v-if="attending" @click="returnTicket(attending.ticketId)" :disabled="event?.isCanceled"
       class="btn btn-outline-danger">
       <i class="mdi mdi-heart"></i>
       <br>
       <b>Refund ticket</b>
+    </button>
+    <button @click="cancelEvent(event.id)" v-if="event?.creatorId == account.id" class="btn btn-danger ms-4"
+      :disabled="event?.isCanceled">
+      <i class="mdi mdi-close-circle text-dark"></i>
+      Cancel event
     </button>
     <!-- <button v-if="account?.id == event?.creatorId" @click="eventsService.changeEvent(event.isCanceled = true)"
       :disabled="event?.isCanceled" class="btn btn-outline-danger">
@@ -148,7 +153,8 @@ export default {
     return {
       guest: computed(() => AppState.ticket),
       event: computed(() => AppState.event),
-      eventTicket: computed(() => AppState.ticket.find(t => t.id == AppState.account.id)),
+      eventTicket: computed(() => AppState.myTickets.find(t => t.creatorId == AppState.account.id)),
+      attending: computed(() => AppState.myTickets.find(e => e.id == route.params.eventId)),
       account: computed(() => AppState.account),
       formData,
       clearForm() {
@@ -183,6 +189,16 @@ export default {
         catch (error) {
           logger.error(error);
           Pop.error(error);
+        }
+      },
+
+      async cancelEvent(eventId) {
+        try {
+          if (await Pop.confirm('do you want to cancel this even?')) {
+            await eventsService.cancelEvent(eventId)
+          }
+        } catch (error) {
+          Pop.error(error)
         }
       }
     };

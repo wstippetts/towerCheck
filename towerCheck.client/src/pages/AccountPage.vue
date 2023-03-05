@@ -17,6 +17,7 @@
           <div class="card-body text-center">
             <p class="mb-0">
               <b>{{ myTickets.name }}</b>
+              <br>
               <b>{{ myTickets.location }}</b>
             </p>
 
@@ -69,6 +70,7 @@ export default {
       account: computed(() => AppState.account),
       myTickets: computed(() => AppState.myTickets),
       myEvents: computed(() => AppState.myEvents),
+      event: computed(() => AppState.event),
 
       async logout() {
         AuthService.logout({ returnTo: window.location.origin })
