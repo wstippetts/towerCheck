@@ -11,11 +11,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto">
-        <li class="m-2">
+        <li v-if="account?.id" class="m-2">
           <button data-bs-toggle="modal" data-bs-target="#event-form" class="btn btn-outline-light mdi mdi-plus-box">Post
             a new event!</button>
         </li>
-        <li class="m-2">
+        <li v-if="account?.id" class="m-2">
           <router-link :to="{ name: 'Account' }" class="btn btn-outline-light lighten-30 selectable text-uppercase ">
             My Account
           </router-link>
